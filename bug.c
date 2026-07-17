@@ -3,6 +3,144 @@
 #include <stdbool.h>
 #include <string.h>
 
+typedef struct
+{
+    char **tokens;
+    int token_count;
+} Line;
+
+typedef struct
+{
+    bool mutability;
+    char *type;
+    char *name;
+    char *value;
+} Variable;
+
+typedef struct
+{
+    char **lines;
+    int count;
+    int capacity;
+
+    char **globals;
+    int global_count;
+    int global_capacity;
+
+    int tmp_count;
+    int str_count;
+} Output_Code;
+
+void init_output_code(Output_Code *oc)
+{
+    oc->lines = NULL;
+    oc->count = 0;
+    oc->capacity = 0;
+}
+
+int next_register = 1;
+
+int allocate_register() {
+    return next_register++;
+}
+
+int reset_register(){
+    return next_register = 1;
+}
+
+void parse_line(const char *buffer, Line *line)
+{
+    char temp[1024]; // temporary buffer for building current token
+    int temp_idx = 0;
+    bool in_quotes = false;
+    char quote_type = 0;
+
+    for (int i = 0; buffer[i] != '\0'; i++)
+    {
+        char c = buffer[i];
+
+        // Handle quote characters (start/end of string literals)
+        if ((c == '"' || c == '\'') && (i == 0 || buffer[i - 1] != '\\'))
+        {
+            if (!in_quotes)
+            {
+                in_quotes = true;
+                quote_type = c;
+            }
+            else if (c == quote_type)
+            {
+                in_quotes = false;
+            }
+            else
+            {
+                temp[temp_idx++] = c;
+            }
+        }
+        // Handle parentheses as separate tokens when outside quotes
+        else if (!in_quotes && (c == '(' || c == ')'))
+        {
+            if (temp_idx > 0)
+            {
+                temp[temp_idx] = '\0';
+                line->tokens = realloc(line->tokens, (line->token_count + 1) * sizeof(char *));
+                line->tokens[line->token_count++] = strdup(temp);
+                temp_idx = 0;
+            }
+            line->tokens = realloc(line->tokens, (line->token_count + 1) * sizeof(char *));
+            char bracket[2] = {c, '\0'};
+            line->tokens[line->token_count++] = strdup(bracket);
+        }
+        // Whitespace delimiters (outside quotes)
+        else if (!in_quotes && (c == ' ' || c == '\t' || c == '\n' || c == '\r'))
+        {
+            if (temp_idx > 0)
+            {
+                temp[temp_idx] = '\0';
+                line->tokens = realloc(line->tokens, (line->token_count + 1) * sizeof(char *));
+                line->tokens[line->token_count++] = strdup(temp);
+                temp_idx = 0;
+            }
+        }
+        else
+        {
+            temp[temp_idx++] = c;
+        }
+    }
+
+    // Add the last token if any remains
+    if (temp_idx > 0)
+    {
+        temp[temp_idx] = '\0';
+        line->tokens = realloc(line->tokens, (line->token_count + 1) * sizeof(char *));
+        line->tokens[line->token_count++] = strdup(temp);
+    }
+}
+
+void add_variable(Variable **vars, int *count, bool mut, char *type, char *name, char *val)
+{
+    *vars = realloc(*vars, (*count + 1) * sizeof(Variable));
+
+    Variable *v = &((*vars)[*count]);
+    v->mutability = mut;
+    v->type = strdup(type);
+    v->name = strdup(name);
+    v->value = strdup(val);
+
+    (*count)++;
+}
+
+void add_line_to_code(Output_Code *oc, const char *text)
+{
+    if (oc->count >= oc->capacity)
+    {
+        oc->capacity = (oc->capacity == 0) ? 10 : oc->capacity * 2;
+        oc->lines = realloc(oc->lines, oc->capacity * sizeof(char *));
+    }
+
+    oc->lines[oc->count] = strdup(text);
+    oc->count++;
+}
+
 int main(){
     return 1;
 }
