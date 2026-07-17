@@ -142,5 +142,58 @@ void add_line_to_code(Output_Code *oc, const char *text)
 }
 
 int main(){
-    return 1;
+    FILE *fptr = fopen("code.bg", "r");
+    if (!fptr){
+        perror("Error opening input file 'code.bg'");
+        return -1;
+    }
+
+    line *lines = NULL;
+    int line_count = 0;
+    char buffer[1024];
+
+    Output_Code myCode;
+    myCode.lines = NULL;
+    myCode.count = 0;
+    myCode.capacity = 0;
+    myCode.globals = NULL;
+    myCode.global_count = 0;
+    myCode.global_capacity = 0;
+    myCode.tmp_count = 0;
+    myCode.str_count = 0;
+
+    while (fgets(buffer, sizeof(buffer), fptr))
+    {
+        // Remove comments (everything after //)
+        char *comment_ptr = strstr(buffer, "//");
+        if (comment_ptr)
+            *comment_ptr = '\0';
+
+        // Remove semicolon if present (simple statement terminator)
+        char *semi = strchr(buffer, ';');
+        if (semi)
+            *semi = '\0';
+
+        // Skip empty lines
+        if (strspn(buffer, " \t\n\r\f\v") == strlen(buffer))
+            continue;
+
+        // Allocate new Line structure
+        lines = realloc(lines, (line_count + 1) * sizeof(Line));
+        lines[line_count].tokens = NULL;
+        lines[line_count].token_count = 0;
+
+        parse_line(buffer, &lines[line_count]);
+        line_count++;
+    }
+
+    for (int i = 0; i < line_count; i++)
+    {
+        printf("Line %d: ", i);
+        for (int j = 0; j < lines[i].token_count; j++)
+        {
+            printf("[%s] ", lines[i].tokens[j]);
+        }
+        printf("\n");
+    }
 }
