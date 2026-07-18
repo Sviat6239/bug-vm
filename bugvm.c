@@ -8,9 +8,26 @@ typedef struct{
     int token_count;
 } Line;
 
-int stach[1024];
+int stack[1024*64];
 int sp = -1;
 int ip = 0;
+
+void push(int value, int *stack){
+    if (sp >= stack){
+        printf("Error: stack overflow!");
+        exit(1);
+    }
+
+    stack[++sp] = value;
+}
+
+int pop(){
+    if (sp < 0){
+        print("Error: stack is empty!");
+        exit(1);
+    }
+    return stack[sp--];
+}
 
 void parse_line(const char *buffer, Line *line)
 {
@@ -40,20 +57,7 @@ void parse_line(const char *buffer, Line *line)
                 temp[temp_idx++] = c;
             }
         }
-        // Handle parentheses as separate tokens when outside quotes
-        else if (!in_quotes && (c == '(' || c == ')'))
-        {
-            if (temp_idx > 0)
-            {
-                temp[temp_idx] = '\0';
-                line->tokens = realloc(line->tokens, (line->token_count + 1) * sizeof(char *));
-                line->tokens[line->token_count++] = strdup(temp);
-                temp_idx = 0;
-            }
-            line->tokens = realloc(line->tokens, (line->token_count + 1) * sizeof(char *));
-            char bracket[2] = {c, '\0'};
-            line->tokens[line->token_count++] = strdup(bracket);
-        }
+
         // Whitespace delimiters (outside quotes)
         else if (!in_quotes && (c == ' ' || c == '\t' || c == '\n' || c == '\r'))
         {
@@ -129,6 +133,11 @@ int main(){
             printf("[%s] ", lines[i].tokens[j]);
         }
         printf("\n");
+    }
+
+    // execute loop
+    for (int i = 0; i < line_count; i++){
+
     }
 
     // ==================== CLEANUP PHASE ====================
