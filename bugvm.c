@@ -14,6 +14,16 @@
 #define OP_INPUT 0x0009 // read value to the stack
 #define OP_STORE 0x000A // store value from the stack in a local variables
 #define OP_LOAD 0x000B // put a value from locals onto stack
+#define OP_CMP 0x000C
+#define OP_JMP 0x000D
+#define OP_JNZ 0x000E
+#define OP_JZ 0x000F
+#define OP_JNE 0x0010
+#define OP_JE 0x0011
+#define OP_JGE 0x0012
+#define OP_JG 0x0013
+#define OP_JLE 0x0014
+#define OP_JL 0x0015
 #define OP_HALT  0xFFFF // halt the programm
 
 typedef enum {
@@ -371,6 +381,36 @@ int main(){
 
                 push(locals[idx]); 
                 break;
+            }
+            case OP_CMP:{
+                continue;
+            }
+            case OP_JMP:{
+                continue;
+            }
+            case OP_ZNE:{
+                continue;
+            }
+            case OP_JZ:{
+                continue;
+            }
+            case OP_JNE:{
+                continue;
+            }
+            case OP_JE:{
+                continue;
+            }
+            case OP_JGE:{
+                continue;
+            }
+            case OP_JG:{
+                continue;
+            }
+            case OP_JLE{
+                continue;
+            }
+            case OP_JL{
+                continue;
             }
             case OP_HALT:
                 ip = line_count;
