@@ -13,7 +13,7 @@ typedef enum{
     OP_PRINT = 0x0007, // print the value from the stack
     OP_INPUT = 0x0008, // read value to rhe stack
     OP_HALT = 0xffff, // halt the programm
-}
+} OpCode;
 
 typedef struct{
     char **tokens;
@@ -25,7 +25,7 @@ int sp = -1;
 int ip = 0;
 
 void push(int value, int *stack){
-    if (sp >= stack){
+    if (sp >= *stack){
         printf("Error: stack overflow!");
         exit(1);
     }
@@ -35,7 +35,7 @@ void push(int value, int *stack){
 
 int pop(){
     if (sp < 0){
-        print("Error: stack is empty!");
+        printf("Error: stack is empty!");
         exit(1);
     }
     return stack[sp--];
@@ -148,8 +148,14 @@ int main(){
     }
 
     // execute loop
-    for (int i = 0; i < line_count; i++){
-
+    for (int i = 0; i < line_count; i++)
+    {
+        printf("Line %d: ", i);
+        for (int j = 0; j < lines[i].token_count; j++)
+        {
+            printf("[%s] ", lines[i].tokens[j]);
+        }
+        printf("\n");
     }
 
     // ==================== CLEANUP PHASE ====================
@@ -165,14 +171,6 @@ int main(){
     free(lines);
 
     fclose(fptr);
-
-    for (int i = 0; i < vars_count; i++)
-    {
-        free(vars[i].type);
-        free(vars[i].name);
-        free(vars[i].value);
-    }
-    free(vars);
 
     return 0;
 
