@@ -11,32 +11,57 @@
 #define OP_MUL   0x0006 // mul two last value from the stack
 #define OP_DIV   0x0007 // div two last value from the stack
 #define OP_PRINT 0x0008 // print the value from the stack
-#define OP_PRINT_STR 0x0009 // print str the value from the stack
-#define OP_INPUT 0x000A // read value to the stack
-#define OP_INPUT_STR 0x000B // read str value to the stack
+#define OP_INPUT 0x0009 // read value to the stack
 #define OP_HALT  0xFFFF // halt the programm
+
+typedef enum {
+    VAL_INT,
+    VAL_STR
+} ValType;
+
+typedef struct {
+    ValType type;
+    union {
+        int as_int;
+        char *as_str;
+    } value;
+} Object;
 
 typedef struct{
     char **tokens;
     int token_count;
 } Line;
 
-#define STACK_SIZE (1024 * 64)
-intptr_t stack[STACK_SIZE];
+#define STACK_SIZE (1024 * 1024)
+Object stack[STACK_SIZE];
 int sp = -1;
 int ip = 0;
 
-void push(intptr_t value) {
+void push(Object obj) {
     if (sp >= STACK_SIZE - 1) {
         printf("Error: stack overflow!\n");
         exit(1);
     }
-    stack[++sp] = value;
+    stack[++sp] = obj;
 }
 
-intptr_t pop(){
-    if (sp < 0){
-        printf("Error: stack is empty!");
+void push_int(int val) {
+    Object obj;
+    obj.type = VAL_INT;
+    obj.value.as_int = val;
+    push(obj);
+}
+
+void push_str(char *str) {
+    Object obj;
+    obj.type = VAL_STR;
+    obj.value.as_str = str;
+    push(obj);
+}
+
+Object pop() {
+    if (sp < 0) {
+        printf("Error: stack is empty!\n");
         exit(1);
     }
     return stack[sp--];
@@ -184,95 +209,150 @@ int main(){
 
         switch (opcode) {
             case OP_PUSH: {
-                if (lines[ip].token_count < 2) {
-                    printf("Error: OP_PUSH requires an argument!\n");
-                    return 1;
-                }
                 int val = (int)strtol(lines[ip].tokens[1], NULL, 0);
-                push(val);
+                push_int(val);
                 break;
             }
             case OP_PUSH_STR: {
-                if (lines[ip].token_count < 2) {
-                        printf("Error: OP_PUSH_STR requires a string argument!\n");
-                        return 1;
-                    }
-                    char *str_ptr = strdup(lines[ip].tokens[1]);
-                    
-                    push((intptr_t)str_ptr);
-                    break;
+                char *str_ptr = strdup(lines[ip].tokens[1]);
+                push_str(str_ptr);
+                break;
             }
             case OP_POP: {
                 pop();
                 break;
             }
             case OP_ADD: {
-                int b = (int)pop();
-                int a = (int)pop();
-                push(o_add(a, b));
+                Object b = pop();
+                Object a = pop();
+
+                if (a.type == VAL_INT && b.type == VAL_INT) {
+                    push_int(a.value.as_int + b.value.as_int);
+                } 
+                else if (a.type == VAL_STR && b.type == VAL_STR) {
+                    char *new_str = malloc(strlen(a.value.as_str) + strlen(b.value.as_str) + 1);
+                    strcpy(new_str, a.value.as_str);
+                    strcat(new_str, b.value.as_str);
+                    push_str(new_str);
+                    
+                    free(a.value.as_str);
+                    free(b.value.as_str);
+                } 
+                else {
+                    printf("Runtime Error: Invalid types for OP_ADD!\n");
+                    return 1;
+                }
                 break;
             }
             case OP_SUB: {
-                int b = (int)pop();
-                int a = (int)pop();
-                push(o_sub(a, b));
+                Object b = pop();
+                Object a = pop();
+
+                if (a.type == VAL_INT && b.type == VAL_INT) {
+                    push_int(a.value.as_int - b.value.as_int);
+                } 
+                else if (a.type == VAL_STR && b.type == VAL_STR) {
+                    char *new_str = malloc(strlen(a.value.as_str) + strlen(b.value.as_str) + 1);
+                    strcpy(new_str, a.value.as_str);
+                    strcat(new_str, b.value.as_str);
+                    push_str(new_str);
+                    
+                    free(a.value.as_str);
+                    free(b.value.as_str);
+                } 
+                else {
+                    printf("Runtime Error: Invalid types for OP_SUB!\n");
+                    return 1;
+                }
                 break;
             }
             case OP_MUL: {
-                int b = (int)pop();
-                int a = (int)pop();
-                push(o_mul(a, b));
+                Object b = pop();
+                Object a = pop();
+
+                if (a.type == VAL_INT && b.type == VAL_INT) {
+                    push_int(a.value.as_int * b.value.as_int);
+                } 
+                else if (a.type == VAL_STR && b.type == VAL_STR) {
+                    char *new_str = malloc(strlen(a.value.as_str) + strlen(b.value.as_str) + 1);
+                    strcpy(new_str, a.value.as_str);
+                    strcat(new_str, b.value.as_str);
+                    push_str(new_str);
+                    
+                    free(a.value.as_str);
+                    free(b.value.as_str);
+                } 
+                else {
+                    printf("Runtime Error: Invalid types for OP_SUB!\n");
+                    return 1;
+                }
                 break;
             }
             case OP_DIV: {
-                int b = (int)pop();
-                int a = (int)pop();
-                push(o_div(a, b));
-                break;
-            }
-            case OP_PRINT:
-                if (sp < 0) {
-                    printf("Error: Stack is empty, nothing to print!\n");
-                } else {
-                    printf("%lld\n", stack[sp]);
+                Object b = pop();
+                Object a = pop();
+
+                if (a.type == VAL_INT && b.type == VAL_INT) {
+                    if(b.value.as_int == 0){
+                        printf("Error: cant divide by zero!");
+                        exit(1);
+                    }
+                    push_int(a.value.as_int / b.value.as_int);
+                } 
+                else if (a.type == VAL_STR && b.type == VAL_STR) {
+                    char *new_str = malloc(strlen(a.value.as_str) + strlen(b.value.as_str) + 1);
+                    strcpy(new_str, a.value.as_str);
+                    strcat(new_str, b.value.as_str);
+                    push_str(new_str);
+                    
+                    free(a.value.as_str);
+                    free(b.value.as_str);
+                } 
+                else {
+                    printf("Runtime Error: Invalid types for OP_SUB!\n");
+                    return 1;
                 }
                 break;
-
-            case OP_PRINT_STR: {
+            }
+            case OP_PRINT: {
                 if (sp < 0) {
                     printf("Error: Stack is empty!\n");
                 } else {
-                    char *str_ptr = (char *)stack[sp]; 
-                    printf("%s\n", str_ptr);
+                    Object obj = stack[sp];
+                    if (obj.type == VAL_INT) {
+                        printf("%d\n", obj.value.as_int);
+                    } else if (obj.type == VAL_STR) {
+                        printf("%s\n", obj.value.as_str);
+                    }
                 }
                 break;
             }
             case OP_INPUT: {
-                int input_val;
-                printf("");
-                if (scanf("%d", &input_val) != 1) {
-                    printf("Error: invalid input!\n");
-                    return 1;
-                }
-                push(input_val);
-                break;
-            }
-            case OP_INPUT_STR: {
                 char input_buf[1024];
-                printf("Enter string: ");
-                
+                printf("Enter value: ");
                 if (scanf(" %1023[^\n]", input_buf) != 1) {
                     printf("Error: invalid input!\n");
                     return 1;
                 }
+
+                bool is_number = true;
+                int start_idx = (input_buf[0] == '-') ? 1 : 0;
                 
-                char *str_ptr = strdup(input_buf);
-                if (!str_ptr) {
-                    printf("Error: memory allocation failed!\n");
-                    return 1;
+                if (input_buf[start_idx] == '\0') is_number = false;
+                
+                for (int i = start_idx; input_buf[i] != '\0'; i++) {
+                    if (input_buf[i] < '0' || input_buf[i] > '9') {
+                        is_number = false;
+                        break;
+                    }
                 }
 
-                push((intptr_t)str_ptr);
+                if (is_number) {
+                    int val = atoi(input_buf);
+                    push_int(val);
+                } else {
+                    push_str(strdup(input_buf));
+                }
                 break;
             }
             case OP_HALT:
