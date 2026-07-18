@@ -267,7 +267,7 @@ int main(){
                     free(b.value.as_str);
                 } 
                 else {
-                    printf("Runtime Error: Invalid types for OP_SUB!\n");
+                    printf("Runtime Error: Invalid types for OP_MUL!\n");
                     return 1;
                 }
                 break;
@@ -293,7 +293,7 @@ int main(){
                     free(b.value.as_str);
                 } 
                 else {
-                    printf("Runtime Error: Invalid types for OP_SUB!\n");
+                    printf("Runtime Error: Invalid types for OP_DIV!\n");
                     return 1;
                 }
                 break;
@@ -313,7 +313,6 @@ int main(){
             }
             case OP_INPUT: {
                 char input_buf[1024];
-                printf("Enter value: ");
                 if (scanf(" %1023[^\n]", input_buf) != 1) {
                     printf("Error: invalid input!\n");
                     return 1;
@@ -374,7 +373,6 @@ int main(){
                 break;
             }
             case OP_HALT:
-                printf("Program halted successfully.\n");
                 ip = line_count;
                 break;
 
