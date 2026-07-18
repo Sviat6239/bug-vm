@@ -4,14 +4,17 @@
 #include <stdbool.h>
 
 #define OP_PUSH  0x0001 // push value on the stack
-#define OP_POP   0x0002 // pop value from the stack
-#define OP_ADD   0x0003 // add two last value from the stack
-#define OP_SUB   0x0004 // sub two last value from the stack
-#define OP_MUL   0x0005 // mul two last value from the stack
-#define OP_DIV   0x0006 // div two last value from the stack
-#define OP_PRINT 0x0007 // print the value from the stack
-#define OP_INPUT 0x0008 // read value to rhe stack
-#define OP_HALT  0xffff // halt the programm
+#define OP_PUSH_STR  0x0002 // push str value on the stack
+#define OP_POP   0x0003 // pop value from the stack
+#define OP_ADD   0x0004 // add two last value from the stack
+#define OP_SUB   0x0005 // sub two last value from the stack
+#define OP_MUL   0x0006 // mul two last value from the stack
+#define OP_DIV   0x0007 // div two last value from the stack
+#define OP_PRINT 0x0008 // print the value from the stack
+#define OP_PRINT_STR 0x0009 // print str the value from the stack
+#define OP_INPUT 0x000A // read value to the stack
+#define OP_INPUT_STR 0x000B // read str value to the stack
+#define OP_HALT  0xFFFF // halt the programm
 
 typedef struct{
     char **tokens;
@@ -19,11 +22,11 @@ typedef struct{
 } Line;
 
 #define STACK_SIZE (1024 * 64)
-int stack[STACK_SIZE];
+intptr_t stack[STACK_SIZE];
 int sp = -1;
 int ip = 0;
 
-void push(int value) {
+void push(intptr_t value) {
     if (sp >= STACK_SIZE - 1) {
         printf("Error: stack overflow!\n");
         exit(1);
@@ -31,7 +34,7 @@ void push(int value) {
     stack[++sp] = value;
 }
 
-int pop(){
+intptr_t pop(){
     if (sp < 0){
         printf("Error: stack is empty!");
         exit(1);
@@ -189,31 +192,41 @@ int main(){
                 push(val);
                 break;
             }
-            case OP_POP:
+            case OP_PUSH_STR: {
+                if (lines[ip].token_count < 2) {
+                        printf("Error: OP_PUSH_STR requires a string argument!\n");
+                        return 1;
+                    }
+                    char *str_ptr = strdup(lines[ip].tokens[1]);
+                    
+                    push((intptr_t)str_ptr);
+                    break;
+            }
+            case OP_POP: {
                 pop();
                 break;
-
+            }
             case OP_ADD: {
-                int b = pop();
-                int a = pop();
+                int b = (int)pop();
+                int a = (int)pop();
                 push(o_add(a, b));
                 break;
             }
             case OP_SUB: {
-                int b = pop();
-                int a = pop();
+                int b = (int)pop();
+                int a = (int)pop();
                 push(o_sub(a, b));
                 break;
             }
             case OP_MUL: {
-                int b = pop();
-                int a = pop();
+                int b = (int)pop();
+                int a = (int)pop();
                 push(o_mul(a, b));
                 break;
             }
             case OP_DIV: {
-                int b = pop();
-                int a = pop();
+                int b = (int)pop();
+                int a = (int)pop();
                 push(o_div(a, b));
                 break;
             }
@@ -221,10 +234,19 @@ int main(){
                 if (sp < 0) {
                     printf("Error: Stack is empty, nothing to print!\n");
                 } else {
-                    printf("%d\n", stack[sp]);
+                    printf("%lld\n", stack[sp]);
                 }
                 break;
 
+            case OP_PRINT_STR: {
+                if (sp < 0) {
+                    printf("Error: Stack is empty!\n");
+                } else {
+                    char *str_ptr = (char *)stack[sp]; 
+                    printf("%s\n", str_ptr);
+                }
+                break;
+            }
             case OP_INPUT: {
                 int input_val;
                 printf("");
@@ -233,6 +255,24 @@ int main(){
                     return 1;
                 }
                 push(input_val);
+                break;
+            }
+            case OP_INPUT_STR: {
+                char input_buf[1024];
+                printf("Enter string: ");
+                
+                if (scanf(" %1023[^\n]", input_buf) != 1) {
+                    printf("Error: invalid input!\n");
+                    return 1;
+                }
+                
+                char *str_ptr = strdup(input_buf);
+                if (!str_ptr) {
+                    printf("Error: memory allocation failed!\n");
+                    return 1;
+                }
+
+                push((intptr_t)str_ptr);
                 break;
             }
             case OP_HALT:
