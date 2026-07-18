@@ -27,6 +27,14 @@
 #define OP_HALT  0xFFFF // halt the programm
 
 typedef enum {
+    FL_EQ,
+    FL_GT,
+    FL_LT
+} CompareFlag;
+
+CompareFlag flags;
+
+typedef enum {
     VAL_INT,
     VAL_STR
 } ValType;
@@ -382,35 +390,82 @@ int main(){
                 push(locals[idx]); 
                 break;
             }
-            case OP_CMP:{
-                continue;
+            case OP_CMP: {
+                Object b = pop();
+                Object a = pop();
+                if (a.type != VAL_INT || b.type != VAL_INT) {
+                    printf("Runtime Error: OP_CMP supports INTEGER only!\n");
+                    return 1;
+                }
+                
+                if (a.value.as_int == b.value.as_int) flags = FL_EQ;
+                else if (a.value.as_int > b.value.as_int) flags = FL_GT;
+                else flags = FL_LT;
+                break;
             }
-            case OP_JMP:{
-                continue;
+            case OP_CMP: {
+                Object b = pop();
+                Object a = pop();
+
+                if (a.type != VAL_INT || b.type != VAL_INT) {
+                    printf("Runtime Error: OP_CMP supports INTEGER comparison only!\n");
+                    return 1;
+                }
+
+                if (a.value.as_int == b.value.as_int) {
+                    flags = FL_EQ;
+                } else if (a.value.as_int > b.value.as_int) {
+                    flags = FL_GT;
+                } else {
+                    flags = FL_LT;
+                }
+
+                break;
             }
-            case OP_ZNE:{
-                continue;
+
+            case OP_JMP: {
+                if (lines[ip].token_count < 2) {
+                    printf("Runtime Error: OP_JMP requires a target line!\n");
+                    return 1;
+                }
+                int target_line = (int)strtol(lines[ip].tokens[1], NULL, 0);
+                if (target_line < 0 || target_line >= line_count) {
+                    printf("Runtime Error: JMP target out of bounds!\n");
+                    return 1;
+                }
+                ip = target_line - 1; 
+                break;
             }
-            case OP_JZ:{
-                continue;
-            }
-            case OP_JNE:{
-                continue;
-            }
-            case OP_JE:{
-                continue;
-            }
-            case OP_JGE:{
-                continue;
-            }
-            case OP_JG:{
-                continue;
-            }
-            case OP_JLE{
-                continue;
-            }
-            case OP_JL{
-                continue;
+
+            case OP_JE:
+            case OP_JNE:
+            case OP_JG:
+            case OP_JGE:
+            case OP_JL:
+            case OP_JLE: {
+                if (lines[ip].token_count < 2) {
+                    printf("Runtime Error: Conditional jump requires a target line!\n");
+                    return 1;
+                }
+                int target_line = (int)strtol(lines[ip].tokens[1], NULL, 0);
+
+                bool should_jump = false;
+
+                if (opcode == OP_JE)   should_jump = (flags == FL_EQ);
+                if (opcode == OP_JNE)  should_jump = (flags != FL_EQ);
+                if (opcode == OP_JG)   should_jump = (flags == FL_GT);
+                if (opcode == OP_JGE)  should_jump = (flags == FL_GT || flags == FL_EQ);
+                if (opcode == OP_JL)   should_jump = (flags == FL_LT);
+                if (opcode == OP_JLE)  should_jump = (flags == FL_LT || flags == FL_EQ);
+
+                if (should_jump) {
+                    if (target_line < 0 || target_line >= line_count) {
+                        printf("Runtime Error: Jump target out of bounds!\n");
+                        return 1;
+                    }
+                    ip = target_line - 1;
+                }
+                break;
             }
             case OP_HALT:
                 ip = line_count;
