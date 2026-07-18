@@ -1,0 +1,2 @@
+str greet = "Hello!";
+print (greet);
