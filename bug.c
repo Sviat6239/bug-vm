@@ -48,6 +48,11 @@ int reset_register(){
     return next_register = 1;
 }
 
+int current_merge_id = 0;
+
+int current_if_id = 0;
+int next_check_label = 0;
+
 void parse_line(const char *buffer, Line *line)
 {
     char temp[1024]; // temporary buffer for building current token
