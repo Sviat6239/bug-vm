@@ -12,6 +12,8 @@
 #define OP_DIV   0x0007 // div two last value from the stack
 #define OP_PRINT 0x0008 // print the value from the stack
 #define OP_INPUT 0x0009 // read value to the stack
+#define OP_STORE 0x000A // store value from the stack in a local variables
+#define OP_LOAD 0x000B // put a value from locals onto stack
 #define OP_HALT  0xFFFF // halt the programm
 
 typedef enum {
@@ -33,7 +35,9 @@ typedef struct{
 } Line;
 
 #define STACK_SIZE (1024 * 1024)
+#define LOCAL_SIZE (1024 * 1024)
 Object stack[STACK_SIZE];
+Object locals[LOCAL_SIZE];
 int sp = -1;
 int ip = 0;
 
@@ -65,26 +69,6 @@ Object pop() {
         exit(1);
     }
     return stack[sp--];
-}
-
-int o_add(int a, int b){
-    return a + b;
-}
-
-int o_sub(int a, int b){
-    return a - b;
-}
-
-int o_mul(int a, int b){
-    return a * b;
-} 
-
-int o_div(int a, int b){
-    if (b == 0){
-        printf("Error: cant divide by zero!");
-        exit(1);
-    }
-    return a / b;
 }
 
 int o_cmp(int a, int b){
@@ -353,6 +337,40 @@ int main(){
                 } else {
                     push_str(strdup(input_buf));
                 }
+                break;
+            }
+            case OP_STORE:{
+                if (lines[ip].token_count < 2){
+                    printf("Error: required argument!");
+                    exit(1);
+                }
+                int idx = (int)strtol(lines[ip].tokens[1], NULL, 0);
+
+                if (idx < 0 || idx >= LOCAL_SIZE) {
+                    printf("Error: Local index out of bounds!\n");
+                    return 1;
+                }
+
+                if (locals[idx].type == VAL_STR && locals[idx].value.as_str != NULL) {
+                    free(locals[idx].value.as_str);
+                }
+
+                locals[idx] = pop(); 
+                break;
+            }
+            case OP_LOAD:{
+                if (lines[ip].token_count < 2){
+                    printf("Error: ruquired argumnet!");
+                    exit(1);
+                }
+                int idx = (int)strtol(lines[ip].tokens[1], NULL, 0);
+
+                if (idx < 0 || idx >= LOCAL_SIZE) {
+                    printf("Error: Local index out of bounds!\n");
+                    return 1;
+                }
+
+                push(locals[idx]); 
                 break;
             }
             case OP_HALT:
