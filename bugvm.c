@@ -6,10 +6,10 @@
 typedef enum{
     OP_PUSH = 0x0001, // push value on the stack
     OP_POP = 0x0002, // pop value from the stack
-    OP_ADD = 0x0003, // add
-    OP_SUB = 0x0004, // sub
-    OP_MUL = 0x0005, // mul
-    OP_DIV = 0x0006, // div
+    OP_ADD = 0x0003, // add two last value from the stack
+    OP_SUB = 0x0004, // sub two last value from the stack
+    OP_MUL = 0x0005, // mul two last value from the stack
+    OP_DIV = 0x0006, // div two last value from the stack
     OP_PRINT = 0x0007, // print the value from the stack
     OP_INPUT = 0x0008, // read value to rhe stack
     OP_HALT = 0xffff, // halt the programm
