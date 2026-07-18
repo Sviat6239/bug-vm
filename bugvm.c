@@ -169,7 +169,6 @@ int main(){
 
     // ==================== EXECUTE LOOP ====================
     printf("\n=== Execution ===\n");
-    printf("\n=== Execution ===\n");
     for (ip = 0; ip < line_count; ip++) {
         if (lines[ip].token_count == 0) continue;
 
