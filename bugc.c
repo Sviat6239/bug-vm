@@ -147,13 +147,13 @@ void add_line_to_code(Output_Code *oc, const char *text)
 }
 
 int main(){
-    FILE *fptr = fopen("code.bg", "r");
+    FILE *fptr = fopen("code001.bug", "r");
     if (!fptr){
         perror("Error opening input file 'code.bg'");
         return -1;
     }
 
-    line *lines = NULL;
+    Line *lines = NULL;
     int line_count = 0;
     char buffer[1024];
 
