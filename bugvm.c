@@ -3,6 +3,18 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+typedef enum{
+    OP_PUSH = 0x0001, // push value on the stack
+    OP_POP = 0x0002, // pop value from the stack
+    OP_ADD = 0x0003, // add
+    OP_SUB = 0x0004, // sub
+    OP_MUL = 0x0005, // mul
+    OP_DIV = 0x0006, // div
+    OP_PRINT = 0x0007, // print the value from the stack
+    OP_INPUT = 0x0008, // read value to rhe stack
+    OP_HALT = 0xffff, // halt the programm
+}
+
 typedef struct{
     char **tokens;
     int token_count;
@@ -85,7 +97,7 @@ void parse_line(const char *buffer, Line *line)
 }
 
 int main(){
-    FILE *fptr = fopen("bytecode001.bin", "r");
+    FILE *fptr = fopen("bytecode001.bbin", "r");
     if (!fptr)
     {
         perror("Error opening input file 'code.as'");
