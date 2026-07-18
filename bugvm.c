@@ -59,6 +59,10 @@ int o_div(int a, int b){
     return a / b;
 }
 
+int o_cmp(int a, int b){
+    return 1;
+}
+
 void parse_line(const char *buffer, Line *line)
 {
     char temp[1024]; // temporary buffer for building current token
@@ -217,13 +221,13 @@ int main(){
                 if (sp < 0) {
                     printf("Error: Stack is empty, nothing to print!\n");
                 } else {
-                    printf("Stack Top: %d\n", stack[sp]);
+                    printf("%d\n", stack[sp]);
                 }
                 break;
 
             case OP_INPUT: {
                 int input_val;
-                printf("Enter value: ");
+                printf("");
                 if (scanf("%d", &input_val) != 1) {
                     printf("Error: invalid input!\n");
                     return 1;
