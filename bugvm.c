@@ -3,28 +3,28 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#define OP_PUSH  0x0001 // push value on the stack
-#define OP_PUSH_STR  0x0002 // push str value on the stack
-#define OP_POP   0x0003 // pop value from the stack
-#define OP_ADD   0x0004 // add two last value from the stack
-#define OP_SUB   0x0005 // sub two last value from the stack
-#define OP_MUL   0x0006 // mul two last value from the stack
-#define OP_DIV   0x0007 // div two last value from the stack
-#define OP_PRINT 0x0008 // print the value from the stack
-#define OP_INPUT 0x0009 // read value to the stack
-#define OP_STORE 0x000A // store value from the stack in a local variables
-#define OP_LOAD 0x000B // put a value from locals onto stack
-#define OP_CMP 0x000C
-#define OP_JMP 0x000D
-#define OP_JNZ 0x000E
-#define OP_JZ 0x000F
-#define OP_JNE 0x0010
-#define OP_JE 0x0011
-#define OP_JGE 0x0012
-#define OP_JG 0x0013
-#define OP_JLE 0x0014
-#define OP_JL 0x0015
-#define OP_HALT  0xFFFF // halt the programm
+#define OP_PUSH     0x0001 // push value on the stack
+#define OP_PUSH_STR 0x0002 // push str value on the stack
+#define OP_POP      0x0003 // pop value from the stack
+#define OP_ADD      0x0004 // add two last values from the stack
+#define OP_SUB      0x0005 // sub two last values from the stack
+#define OP_MUL      0x0006 // mul two last values from the stack
+#define OP_DIV      0x0007 // div two last values from the stack
+#define OP_PRINT    0x0008 // print the value from the stack
+#define OP_INPUT    0x0009 // read value to the stack
+#define OP_STORE    0x000A // store value from the stack in a local variable
+#define OP_LOAD     0x000B // put a value from locals onto stack
+#define OP_CMP      0x000C // compare two top values from stack and set flags
+#define OP_JMP      0x000D // unconditional jump to a target line
+#define OP_JNZ      0x000E // jump to a target line if flag is not zero
+#define OP_JZ       0x000F // jump to a target line if flag is zero
+#define OP_JNE      0x0010 // jump if not equal (flags != FL_EQ)
+#define OP_JE       0x0011 // jump if equal (flags == FL_EQ)
+#define OP_JGE      0x0012 // jump if greater or equal (flags == FL_GT || flags == FL_EQ)
+#define OP_JG       0x0013 // jump if greater (flags == FL_GT)
+#define OP_JLE      0x0014 // jump if less or equal (flags == FL_LT || flags == FL_EQ)
+#define OP_JL       0x0015 // jump if less (flags == FL_LT)
+#define OP_HALT     0xFFFF // halt the program
 
 typedef enum {
     FL_EQ,
@@ -451,8 +451,8 @@ int main(){
 
                 bool should_jump = false;
 
-                if (opcode == OP_JE)   should_jump = (flags == FL_EQ);
-                if (opcode == OP_JNE)  should_jump = (flags != FL_EQ);
+                if (opcode == OP_JE || opcode == OP_JZ)    should_jump = (flags == FL_EQ);
+                if (opcode == OP_JNE || opcode == OP_JNZ)  should_jump = (flags != FL_EQ);
                 if (opcode == OP_JG)   should_jump = (flags == FL_GT);
                 if (opcode == OP_JGE)  should_jump = (flags == FL_GT || flags == FL_EQ);
                 if (opcode == OP_JL)   should_jump = (flags == FL_LT);
