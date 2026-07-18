@@ -1,37 +1,42 @@
 # dummyVM
 
-A small experimental stack-based virtual machine written in C.
+A small experimental stack-based virtual machine and parser playground written in C.
 
-**Version:** 0.1.0
+**Version:** 0.1.1
 
 ## Overview
-This project contains a minimal, lightweight Virtual Machine (VM) skeleton that reads text-based bytecode files containing hexadecimal opcodes, tokenizes them, and executes them using an internal stack environment. 
+This repository currently contains two experimental C programs:
+
+- `bugvm.c` reads `bytecode001.bbin`, strips comments, tokenizes each line, and executes a small opcode set on an internal stack.
+- `bugc.c` is an early parser/code-generation experiment that reads `code.bg` and prints the tokenized lines.
 
 ## Instruction Set Architecture (ISA)
-The VM operates on a 16-bit opcode scale (interpreted from hex text) and utilizes a dedicated data stack ($1024 \times 64$ elements).
+The VM operates on 16-bit opcodes read from hex text and uses a stack with `1024 * 1024` slots.
 
 | Opcode | Mnemonic | Description |
 | :--- | :--- | :--- |
-| `0x0001` | **OP_PUSH** | Pushes a 32-bit integer argument onto the stack. |
-| `0x0002` | **OP_POP** | Pops the top value off the stack. |
-| `0x0003` | **OP_ADD** | Pops two values, adds them, and pushes the result. |
-| `0x0004` | **OP_SUB** | Pops two values, subtracts the first from the second, pushes the result. |
-| `0x0005` | **OP_MUL** | Pops two values, multiplies them, and pushes the result. |
-| `0x0006` | **OP_DIV** | Pops two values, divides the second by the first (guards against zero). |
-| `0x0007` | **OP_PRINT**| Prints the current top value of the stack without popping it. |
-| `0x0008` | **OP_INPUT**| Reads an integer from standard input and pushes it onto the stack. |
+| `0x0001` | **OP_PUSH** | Pushes a numeric value onto the stack. |
+| `0x0002` | **OP_PUSH_STR** | Pushes a string token onto the stack. |
+| `0x0003` | **OP_POP** | Pops the top value off the stack. |
+| `0x0004` | **OP_ADD** | Adds two integers or concatenates two strings. |
+| `0x0005` | **OP_SUB** | Subtracts two integers or concatenates two strings in the current implementation. |
+| `0x0006` | **OP_MUL** | Multiplies two integers or concatenates two strings in the current implementation. |
+| `0x0007` | **OP_DIV** | Divides two integers and guards against zero. |
+| `0x0008` | **OP_PRINT** | Prints the current top value of the stack without popping it. |
+| `0x0009` | **OP_INPUT** | Reads a value from standard input and pushes it as an integer or string. |
 | `0xffff` | **OP_HALT** | Successfully terminates program execution. |
 
 ## Files
-- `bugvm.c` — Main source file containing the tokenizer, hex-parser, and execution loop.
-- `bytecode001.bbin` — Sample text-based bytecode input file.
+- `bugvm.c` — Main VM source file containing the tokenizer, hex-parser, stack, and execution loop.
+- `bugc.c` — Experimental parser/tokenizer prototype.
+- `bytecode001.bbin` — Sample text-based bytecode input file for `bugvm.c`.
 
 ## Bytecode Example (`bytecode001.bbin`)
 ```text
 0x0001 54    // Push 54 onto the stack
 0x0001 47    // Push 47 onto the stack
-0x0003       // Add them together (54 + 47)
-0x0007       // Print the result (101)
+0x0004       // Add them together (54 + 47)
+0x0008       // Print the result (101)
 0xffff       // Halt
 ```
 
@@ -50,4 +55,4 @@ On Windows with MinGW or MSVC, use the equivalent C compiler invocation.
 ```
 
 ## Notes
-This project is still in an early stage, so the parser and execution logic are incomplete.
+The code is still experimental, so some instructions and error messages are rough around the edges.
