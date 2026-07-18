@@ -393,19 +393,6 @@ int main(){
             case OP_CMP: {
                 Object b = pop();
                 Object a = pop();
-                if (a.type != VAL_INT || b.type != VAL_INT) {
-                    printf("Runtime Error: OP_CMP supports INTEGER only!\n");
-                    return 1;
-                }
-                
-                if (a.value.as_int == b.value.as_int) flags = FL_EQ;
-                else if (a.value.as_int > b.value.as_int) flags = FL_GT;
-                else flags = FL_LT;
-                break;
-            }
-            case OP_CMP: {
-                Object b = pop();
-                Object a = pop();
 
                 if (a.type != VAL_INT || b.type != VAL_INT) {
                     printf("Runtime Error: OP_CMP supports INTEGER comparison only!\n");
