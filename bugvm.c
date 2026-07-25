@@ -90,6 +90,13 @@ void push_str(char *str) {
     push(obj);
 }
 
+void push_float(double val){
+    Object obj;
+    obj.type = VAL_FLOAT;
+    obj.value.as_float = val;
+    push(obj);
+}
+
 Object pop() {
     if (sp < 0) {
         printf("Error: stack is empty!\n");
