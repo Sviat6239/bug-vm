@@ -5,7 +5,7 @@
 
 #define OP_PUSH         0x0001 // push value on the stack
 #define OP_PUSH_STR     0x0002 // push str value on the stack
-#define OP_PUSH_FLOAT   0x0003
+#define OP_PUSH_FLOAT   0x0003 // push float value on the stack
 #define OP_POP          0x0004 // pop value from the stack
 #define OP_ADD          0x0005 // add two last values from the stack
 #define OP_SUB          0x0006 // sub two last values from the stack
