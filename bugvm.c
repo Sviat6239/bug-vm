@@ -24,6 +24,13 @@
 #define OP_JG       0x0013 // jump if greater (flags == FL_GT)
 #define OP_JLE      0x0014 // jump if less or equal (flags == FL_LT || flags == FL_EQ)
 #define OP_JL       0x0015 // jump if less (flags == FL_LT)
+#define OP_AND      0x0016 // logical AND
+#define OP_OR       0x0017 // logical OR
+#define OP_NOR      0x0018 // logical NOT
+#define OP_CALL     0x0019 // call function
+#define OP_RET      0x001A // return from function
+#define OP_STRLEN   0x001B // string length
+#define OP_STRCMP   0x001C // compare string
 #define OP_HALT     0xFFFF // halt the program
 
 typedef enum {
