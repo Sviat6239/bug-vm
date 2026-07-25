@@ -236,6 +236,11 @@ int main(){
                 push_str(str_ptr);
                 break;
             }
+            case OP_PUSH_FLOAT: {
+                double val = (int)strtol(lines[ip].tokens[1], NULL, 0);
+                push_float(val);
+                break;
+            }
             case OP_POP: {
                 pop();
                 break;
