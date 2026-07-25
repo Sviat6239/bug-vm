@@ -342,6 +342,13 @@ int main(){
                     free(a.value.as_str);
                     free(b.value.as_str);
                 } 
+                else if (a.type == VAL_FLOAT && b.type == VAL_FLOAT) {
+                    if(b.value.as_float == 0){
+                        printf("Error: cant divide by zero!");
+                        exit(1);
+                    }
+                    push_int(a.value.as_float / b.value.as_float);
+                } 
                 else {
                     printf("Runtime Error: Invalid types for OP_DIV!\n");
                     return 1;
