@@ -364,6 +364,8 @@ int main(){
                         printf("%d\n", obj.value.as_int);
                     } else if (obj.type == VAL_STR) {
                         printf("%s\n", obj.value.as_str);
+                    } else if (obj.type == VAL_FLOAT) {
+                        printf("%s\n", obj.value.as_float);
                     }
                 }
                 break;
