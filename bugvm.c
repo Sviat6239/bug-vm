@@ -52,8 +52,8 @@ typedef struct{
     int token_count;
 } Line;
 
-#define STACK_SIZE (1024 * 1024)
-#define LOCAL_SIZE (1024 * 1024)
+#define STACK_SIZE (1024 * 1024 * 16)
+#define LOCAL_SIZE (1024 * 1024 * 16)
 Object stack[STACK_SIZE];
 Object locals[LOCAL_SIZE];
 int sp = -1;
