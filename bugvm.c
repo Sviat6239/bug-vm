@@ -233,20 +233,24 @@ int main(){
                 push_int(val);
                 break;
             }
+
             case OP_PUSH_STR: {
                 char *str_ptr = strdup(lines[ip].tokens[1]);
                 push_str(str_ptr);
                 break;
             }
+
             case OP_PUSH_FLOAT: {
                 double val = (int)strtol(lines[ip].tokens[1], NULL, 0);
                 push_float(val);
                 break;
             }
+
             case OP_POP: {
                 pop();
                 break;
             }
+
             case OP_ADD: {
                 Object b = pop();
                 Object a = pop();
@@ -272,6 +276,7 @@ int main(){
                 }
                 break;
             }
+            
             case OP_SUB: {
                 Object b = pop();
                 Object a = pop();
@@ -297,6 +302,7 @@ int main(){
                 }
                 break;
             }
+
             case OP_MUL: {
                 Object b = pop();
                 Object a = pop();
@@ -322,6 +328,7 @@ int main(){
                 }
                 break;
             }
+
             case OP_DIV: {
                 Object b = pop();
                 Object a = pop();
@@ -355,6 +362,7 @@ int main(){
                 }
                 break;
             }
+
             case OP_PRINT: {
                 if (sp < 0) {
                     printf("Error: Stack is empty!\n");
@@ -370,6 +378,7 @@ int main(){
                 }
                 break;
             }
+
             case OP_INPUT: {
                 char input_buf[1024];
                 if (scanf(" %1023[^\n]", input_buf) != 1) {
@@ -397,6 +406,7 @@ int main(){
                 }
                 break;
             }
+
             case OP_STORE:{
                 if (lines[ip].token_count < 2){
                     printf("Error: required argument!");
@@ -416,6 +426,7 @@ int main(){
                 locals[idx] = pop(); 
                 break;
             }
+
             case OP_LOAD:{
                 if (lines[ip].token_count < 2){
                     printf("Error: ruquired argumnet!");
@@ -502,6 +513,31 @@ int main(){
                 }
                 break;
             }
+
+            case OP_AND:
+                break;
+
+            case OP_OR:
+                break;
+
+            case OP_NOT:
+                break;
+
+            case OP_CALL:
+                break;
+
+            case OP_RET:
+                break;
+
+            case OP_STRCMP:
+                break;
+
+            case OP_STRLEN:
+                break;
+
+            case OP_LABEL:
+                break;
+
             case OP_HALT:
                 ip = line_count;
                 break;
