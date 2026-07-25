@@ -436,7 +436,10 @@ int main(){
                 Object a = pop();
 
                 if (a.type != VAL_INT || b.type != VAL_INT) {
-                    printf("Runtime Error: OP_CMP supports INTEGER comparison only!\n");
+                    printf("Runtime Error: OP_CMP supports INTEGER and FLOAT comparison only!\n");
+                    return 1;
+                } else if (a.type != VAL_FLOAT || b.type != VAL_FLOAT) {
+                    printf("Runtime Error: OP_CMP supports INTEGER and FLOAT comparison only!\n");
                     return 1;
                 }
 
@@ -444,8 +447,20 @@ int main(){
                     flags = FL_EQ;
                 } else if (a.value.as_int > b.value.as_int) {
                     flags = FL_GT;
-                } else {
+                } else if (a.value.as_int < b.value.as_int){
                     flags = FL_LT;
+                } else {
+                    printf("Unknown type!");
+                }
+
+                if (a.value.as_float == b.value.as_float) {
+                    flags = FL_EQ;
+                } else if (a.value.as_float > b.value.as_float) {
+                    flags = FL_GT;
+                } else if (a.value.as_float < b.value.as_float){
+                    flags = FL_LT;
+                } else {
+                    printf("Unknown type!");
                 }
 
                 break;
