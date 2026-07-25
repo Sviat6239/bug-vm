@@ -449,8 +449,6 @@ int main(){
                     flags = FL_GT;
                 } else if (a.value.as_int < b.value.as_int){
                     flags = FL_LT;
-                } else {
-                    printf("Unknown type!");
                 }
 
                 if (a.value.as_float == b.value.as_float) {
@@ -459,8 +457,6 @@ int main(){
                     flags = FL_GT;
                 } else if (a.value.as_float < b.value.as_float){
                     flags = FL_LT;
-                } else {
-                    printf("Unknown type!");
                 }
 
                 break;
