@@ -43,7 +43,8 @@ CompareFlag flags;
 
 typedef enum {
     VAL_INT,
-    VAL_STR
+    VAL_STR,
+    VAL_FLOAT
 } ValType;
 
 typedef struct {
@@ -51,6 +52,7 @@ typedef struct {
     union {
         int as_int;
         char *as_str;
+        double as_float;
     } value;
 } Object;
 
