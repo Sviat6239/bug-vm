@@ -288,6 +288,9 @@ int main(){
                     free(a.value.as_str);
                     free(b.value.as_str);
                 } 
+                else if (a.type == VAL_FLOAT && b.type == VAL_INT){
+                    push_float(a.value.as_float - b.value.as_float);
+                }
                 else {
                     printf("Runtime Error: Invalid types for OP_SUB!\n");
                     return 1;
