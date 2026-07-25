@@ -431,31 +431,27 @@ int main(){
                 push(locals[idx]); 
                 break;
             }
+
             case OP_CMP: {
                 Object b = pop();
                 Object a = pop();
 
-                if (a.type != VAL_INT || b.type != VAL_INT) {
-                    printf("Runtime Error: OP_CMP supports INTEGER and FLOAT comparison only!\n");
-                    return 1;
-                } else if (a.type != VAL_FLOAT || b.type != VAL_FLOAT) {
+                bool a_is_num = (a.type == VAL_INT || a.type == VAL_FLOAT);
+                bool b_is_num = (b.type == VAL_INT || b.type == VAL_FLOAT);
+
+                if (!a_is_num || !b_is_num) {
                     printf("Runtime Error: OP_CMP supports INTEGER and FLOAT comparison only!\n");
                     return 1;
                 }
 
-                if (a.value.as_int == b.value.as_int) {
-                    flags = FL_EQ;
-                } else if (a.value.as_int > b.value.as_int) {
-                    flags = FL_GT;
-                } else if (a.value.as_int < b.value.as_int){
-                    flags = FL_LT;
-                }
+                double val_a = (a.type == VAL_INT) ? (double)a.value.as_int : a.value.as_float;
+                double val_b = (b.type == VAL_INT) ? (double)b.value.as_int : b.value.as_float;
 
-                if (a.value.as_float == b.value.as_float) {
+                if (val_a == val_b) {
                     flags = FL_EQ;
-                } else if (a.value.as_float > b.value.as_float) {
+                } else if (val_a > val_b) {
                     flags = FL_GT;
-                } else if (a.value.as_float < b.value.as_float){
+                } else {
                     flags = FL_LT;
                 }
 
