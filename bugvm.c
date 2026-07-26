@@ -64,7 +64,7 @@ typedef struct{
     int token_count;
 } Line;
 
-#define STACK_SIZE (1024 * 1024 * 16)
+#define STACK_SIZE (1024 * 1024 * 2)
 #define LOCAL_SIZE (1024 * 1024 * 16)
 Object stack[STACK_SIZE];
 Object locals[LOCAL_SIZE];
@@ -168,7 +168,7 @@ void parse_line(const char *buffer, Line *line)
 }
 
 int main(){
-    FILE *fptr = fopen("bytecode001.bbin", "r");
+    FILE *fptr = fopen("bytecode002.bbin", "r");
     if (!fptr)
     {
         perror("Error opening input file 'code.as'");
@@ -231,6 +231,12 @@ int main(){
         switch (opcode) {
             case OP_PUSH: {
                 int val = (int)strtol(lines[ip].tokens[1], NULL, 0);
+                push_int(val);
+                break;
+            }
+
+            case OP_PUSH_INT: {
+                double val = (int)strtol(lines[ip].tokens[1], NULL, 0);
                 push_int(val);
                 break;
             }
@@ -410,7 +416,8 @@ int main(){
 
             case OP_STORE:{
                 if (lines[ip].token_count < 2){
-                    printf("Error: required argument!");
+                    printf("Error: required argument!\n");
+                    printf("Error on %d line\n", line_count);
                     exit(1);
                 }
                 int idx = (int)strtol(lines[ip].tokens[1], NULL, 0);
@@ -430,7 +437,8 @@ int main(){
 
             case OP_LOAD:{
                 if (lines[ip].token_count < 2){
-                    printf("Error: ruquired argumnet!");
+                    printf("Error: ruquired argumnet!\n");
+                    printf("Error on %d line\n", line_count);
                     exit(1);
                 }
                 int idx = (int)strtol(lines[ip].tokens[1], NULL, 0);
