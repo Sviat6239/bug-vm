@@ -31,7 +31,7 @@
 #define OP_NOT              0x001A // logical NOT
 #define OP_CALL             0x001B // call function
 #define OP_RET              0x001C // return from function
-#define OP_STRLEN           0x001D // string length
+#define OP_STRLEN           0x001D // gets first string value from the stack and then return its len
 #define OP_STRCMP           0x001E // compare string
 #define OP_LABEL            0x001F // create label
 #define OP_PRT_STACK        0x0020 // print last value on stack and it position
@@ -177,7 +177,7 @@ void parse_line(const char *buffer, Line *line)
 }
 
 int main(){
-    FILE *fptr = fopen("bytecode003.bbin", "r");
+    FILE *fptr = fopen("bytecode004.bbin", "r");
     if (!fptr)
     {
         perror("Error opening input file 'code.as'");
@@ -632,8 +632,28 @@ int main(){
             case OP_STRCMP:
                 break;
 
-            case OP_STRLEN:
+            case OP_STRLEN: {
+                Object a = pop();
+
+                if (a.type == VAL_INT) {
+                    printf("Error: invalid type: INT!\n");
+                    return 1;
+                } else if (a.type == VAL_FLOAT) {
+                    printf("Error: invalid type: FLOAT!\n");
+                    return 1;
+                } else if (a.type == VAL_STR) {
+                    if (a.value.as_str == NULL) {
+                        push_int(0);
+                    } else {
+                        int len = (int)strlen(a.value.as_str);
+                        push_int(len);
+                    }
+                } else {
+                    printf("Error: unknown type for OP_STRLEN!\n");
+                    return 1;
+                }
                 break;
+            }
 
             case OP_LABEL: {
                 break;
