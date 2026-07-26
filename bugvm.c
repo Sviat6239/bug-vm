@@ -38,6 +38,10 @@
 #define OP_PRT_ALL_STACK    0x0021 // print all value on the stack and their positions
 #define OP_PRT_LOCAL        0x0022 // print last value in local storage and it position
 #define OP_PRT_ALL_LOCAL    0x0023 // print all value in local storage and their positions
+#define OP_FUNC             0x0024
+#define OP_STRUCT           0x0025
+#define OP_ENUM             0x0026
+#define OP_UNION            0x0027
 #define OP_HALT             0xFFFF // halt the program
 
 typedef enum {
