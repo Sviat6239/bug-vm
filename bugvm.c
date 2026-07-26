@@ -177,7 +177,7 @@ void parse_line(const char *buffer, Line *line)
 }
 
 int main(){
-    FILE *fptr = fopen("bytecode001.bbin", "r");
+    FILE *fptr = fopen("bytecode003.bbin", "r");
     if (!fptr)
     {
         perror("Error opening input file 'code.as'");
@@ -639,14 +639,46 @@ int main(){
                 break;
             }
 
-            case OP_PRT_STACK:
+            case OP_PRT_STACK: {
+                if (sp < 0) {
+                    printf("Error: Stack is empty!\n");
+                } else {
+                    Object obj = stack[sp];
+                    printf("Current stack position: %d, value: ", sp+1);
+                    
+                    if (obj.type == VAL_INT) {
+                        printf("%d\n", obj.value.as_int);
+                    } else if (obj.type == VAL_STR) {
+                        printf("%s\n", obj.value.as_str);
+                    } else if (obj.type == VAL_FLOAT) {
+                        printf("%f\n", obj.value.as_float);
+                    }
+                }
                 break;
+            }
 
             case OP_PRT_LOCAL:
                 break;
 
-            case OP_PRT_ALL_STACK:
+            case OP_PRT_ALL_STACK:{
+                if (sp < 0){
+                    printf("Error: Stack is empty!\n");
+                } else {
+                    Object obj = stack[sp];
+                    for (int i; i <= sp; i++){
+                        printf("Current stack position: %d, value: ", sp);
+                    
+                        if (obj.type == VAL_INT) {
+                            printf("%d\n", obj.value.as_int);
+                        } else if (obj.type == VAL_STR) {
+                            printf("%s\n", obj.value.as_str);
+                        } else if (obj.type == VAL_FLOAT) {
+                            printf("%f\n", obj.value.as_float);
+                        }
+                    }
+                }
                 break;
+            }
 
             case OP_PRT_ALL_LOCAL:
                 break;
