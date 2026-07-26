@@ -28,7 +28,7 @@
 #define OP_JL           0x0017 // jump if less (flags == FL_LT)
 #define OP_AND          0x0018 // logical AND
 #define OP_OR           0x0019 // logical OR
-#define OP_NOR          0x001A // logical NOT
+#define OP_NOT          0x001A // logical NOT
 #define OP_CALL         0x001B // call function
 #define OP_RET          0x001C // return from function
 #define OP_STRLEN       0x001D // string length
@@ -374,7 +374,7 @@ int main(){
                     } else if (obj.type == VAL_STR) {
                         printf("%s\n", obj.value.as_str);
                     } else if (obj.type == VAL_FLOAT) {
-                        printf("%s\n", obj.value.as_float);
+                        printf("%f\n", obj.value.as_float);
                     }
                 }
                 break;
@@ -586,6 +586,7 @@ int main(){
                 break;
 
             case OP_LABEL:
+
                 break;
 
             case OP_HALT:
