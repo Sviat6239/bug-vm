@@ -3,38 +3,42 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#define OP_PUSH         0x0001 // push value on the stack
-#define OP_PUSH_INT     0X0002 // push int value on the stack
-#define OP_PUSH_STR     0x0003 // push str value on the stack
-#define OP_PUSH_FLOAT   0x0004 // push float value on the stack
-#define OP_POP          0x0005 // pop value from the stack
-#define OP_ADD          0x0006 // add two last values from the stack
-#define OP_SUB          0x0007 // sub two last values from the stack
-#define OP_MUL          0x0008 // mul two last values from the stack
-#define OP_DIV          0x0009 // div two last values from the stack
-#define OP_PRINT        0x000A // print the value from the stack
-#define OP_INPUT        0x000B // read value to the stack
-#define OP_STORE        0x000C // store value from the stack in a local variable
-#define OP_LOAD         0x000D // put a value from locals onto stack
-#define OP_CMP          0x000E // compare two top values from stack and set flags
-#define OP_JMP          0x000F // unconditional jump to a target line
-#define OP_JNZ          0x0010 // jump to a target line if flag is not zero
-#define OP_JZ           0x0011 // jump to a target line if flag is zero
-#define OP_JNE          0x0012 // jump if not equal (flags != FL_EQ)
-#define OP_JE           0x0013 // jump if equal (flags == FL_EQ)
-#define OP_JGE          0x0014 // jump if greater or equal (flags == FL_GT || flags == FL_EQ)
-#define OP_JG           0x0015 // jump if greater (flags == FL_GT)
-#define OP_JLE          0x0016 // jump if less or equal (flags == FL_LT || flags == FL_EQ)
-#define OP_JL           0x0017 // jump if less (flags == FL_LT)
-#define OP_AND          0x0018 // logical AND
-#define OP_OR           0x0019 // logical OR
-#define OP_NOT          0x001A // logical NOT
-#define OP_CALL         0x001B // call function
-#define OP_RET          0x001C // return from function
-#define OP_STRLEN       0x001D // string length
-#define OP_STRCMP       0x001E // compare string
-#define OP_LABEL        0x001F // create label
-#define OP_HALT         0xFFFF // halt the program
+#define OP_PUSH             0x0001 // push value on the stack
+#define OP_PUSH_INT         0x0002 // push int value on the stack
+#define OP_PUSH_STR         0x0003 // push str value on the stack
+#define OP_PUSH_FLOAT       0x0004 // push float value on the stack
+#define OP_POP              0x0005 // pop value from the stack
+#define OP_ADD              0x0006 // add two last values from the stack
+#define OP_SUB              0x0007 // sub two last values from the stack
+#define OP_MUL              0x0008 // mul two last values from the stack
+#define OP_DIV              0x0009 // div two last values from the stack
+#define OP_PRINT            0x000A // print the value from the stack
+#define OP_INPUT            0x000B // read value to the stack
+#define OP_STORE            0x000C // store value from the stack in a local variable
+#define OP_LOAD             0x000D // put a value from locals onto stack
+#define OP_CMP              0x000E // compare two top values from stack and set flags
+#define OP_JMP              0x000F // unconditional jump to a target line
+#define OP_JNZ              0x0010 // jump to a target line if flag is not zero
+#define OP_JZ               0x0011 // jump to a target line if flag is zero
+#define OP_JNE              0x0012 // jump if not equal (flags != FL_EQ)
+#define OP_JE               0x0013 // jump if equal (flags == FL_EQ)
+#define OP_JGE              0x0014 // jump if greater or equal (flags == FL_GT || flags == FL_EQ)
+#define OP_JG               0x0015 // jump if greater (flags == FL_GT)
+#define OP_JLE              0x0016 // jump if less or equal (flags == FL_LT || flags == FL_EQ)
+#define OP_JL               0x0017 // jump if less (flags == FL_LT)
+#define OP_AND              0x0018 // logical AND
+#define OP_OR               0x0019 // logical OR
+#define OP_NOT              0x001A // logical NOT
+#define OP_CALL             0x001B // call function
+#define OP_RET              0x001C // return from function
+#define OP_STRLEN           0x001D // string length
+#define OP_STRCMP           0x001E // compare string
+#define OP_LABEL            0x001F // create label
+#define OP_PRT_STACK        0x0020 // print last value on stack and it position
+#define OP_PRT_ALL_STACK    0x0021 // print all value on the stack and their positions
+#define OP_PRT_LOCAL        0x0021 // print last value in local storage and it position
+#define OP_PRT_ALL_LOCAL    0x0022 // print all value in local storage and their positions
+#define OP_HALT             0xFFFF // halt the program
 
 typedef enum {
     FL_EQ,
@@ -168,7 +172,7 @@ void parse_line(const char *buffer, Line *line)
 }
 
 int main(){
-    FILE *fptr = fopen("bytecode002.bbin", "r");
+    FILE *fptr = fopen("bytecode001.bbin", "r");
     if (!fptr)
     {
         perror("Error opening input file 'code.as'");
