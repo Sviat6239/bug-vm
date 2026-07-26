@@ -437,7 +437,7 @@ int main(){
 
             case OP_LOAD:{
                 if (lines[ip].token_count < 2){
-                    printf("Error: ruquired argumnet!\n");
+                    printf("Error: ruquired argument!\n");
                     printf("Error on %d line\n", line_count);
                     exit(1);
                 }
