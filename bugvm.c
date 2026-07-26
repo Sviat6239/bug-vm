@@ -177,7 +177,7 @@ void parse_line(const char *buffer, Line *line)
 }
 
 int main(){
-    FILE *fptr = fopen("bytecode004.bbin", "r");
+    FILE *fptr = fopen("bytecode005.bbin", "r");
     if (!fptr)
     {
         perror("Error opening input file 'code.as'");
@@ -629,8 +629,15 @@ int main(){
             case OP_RET:
                 break;
 
-            case OP_STRCMP:
+            case OP_STRCMP:{
+                Object a = pop();
+                Object b = pop();
+
+                int cmp = strcmp(a.value.as_str, b.value.as_str);
+                push_int(cmp);
+
                 break;
+            }
 
             case OP_STRLEN: {
                 Object a = pop();
