@@ -36,8 +36,8 @@
 #define OP_LABEL            0x001F // create label
 #define OP_PRT_STACK        0x0020 // print last value on stack and it position
 #define OP_PRT_ALL_STACK    0x0021 // print all value on the stack and their positions
-#define OP_PRT_LOCAL        0x0021 // print last value in local storage and it position
-#define OP_PRT_ALL_LOCAL    0x0022 // print all value in local storage and their positions
+#define OP_PRT_LOCAL        0x0022 // print last value in local storage and it position
+#define OP_PRT_ALL_LOCAL    0x0023 // print all value in local storage and their positions
 #define OP_HALT             0xFFFF // halt the program
 
 typedef enum {
@@ -67,6 +67,11 @@ typedef struct{
     char **tokens;
     int token_count;
 } Line;
+
+typedef struct {
+    char *name;
+    int line_count;
+} Label;
 
 #define STACK_SIZE (1024 * 1024 * 2)
 #define LOCAL_SIZE (1024 * 1024 * 16)
@@ -183,6 +188,9 @@ int main(){
     int line_count = 0;
     char buffer[1024];
 
+    Label *labels = NULL;
+    int label_count = 0;
+
     // ==================== READING AND TOKENIZING PHASE ====================
     printf("=== Reading and tokenizing code.as ===\n");
     while (fgets(buffer, sizeof(buffer), fptr))
@@ -223,6 +231,25 @@ int main(){
     }
 
     char *value;
+
+    // ==================== COLLECTS ALL LABELS ====================
+    for (int i = 0; i < line_count; i++) {
+    if (lines[i].token_count == 0) continue;
+
+    int opcode = (int)strtol(lines[i].tokens[0], NULL, 0);
+    
+    if (opcode == OP_LABEL) {
+        if (lines[i].token_count < 2) {
+            printf("Error: OP_LABEL requires a name/identifier!\n");
+            exit(1);
+        }
+
+        labels = realloc(labels, (label_count + 1) * sizeof(Label));
+        labels[label_count].name = strdup(lines[i].tokens[1]);
+        labels[label_count].line_count = i;
+        label_count++;
+    }
+}
 
     // ==================== EXECUTE LOOP ====================
     printf("\n=== Execution ===\n");
@@ -484,15 +511,26 @@ int main(){
 
             case OP_JMP: {
                 if (lines[ip].token_count < 2) {
-                    printf("Runtime Error: OP_JMP requires a target line!\n");
+                    printf("Runtime Error: OP_JMP requires a target label!\n");
                     return 1;
                 }
-                int target_line = (int)strtol(lines[ip].tokens[1], NULL, 0);
-                if (target_line < 0 || target_line >= line_count) {
-                    printf("Runtime Error: JMP target out of bounds!\n");
+                
+                char *target_name = lines[ip].tokens[1];
+                int target_line = -1;
+
+                for (int i = 0; i < label_count; i++) {
+                    if (strcmp(labels[i].name, target_name) == 0) {
+                        target_line = labels[i].line_count;
+                        break;
+                    }
+                }
+
+                if (target_line == -1) {
+                    printf("Runtime Error: Label '%s' not found!\n", target_name);
                     return 1;
                 }
-                ip = target_line - 1; 
+
+                ip = target_line - 1;
                 break;
             }
 
@@ -597,8 +635,20 @@ int main(){
             case OP_STRLEN:
                 break;
 
-            case OP_LABEL:
+            case OP_LABEL: {
+                break;
+            }
 
+            case OP_PRT_STACK:
+                break;
+
+            case OP_PRT_LOCAL:
+                break;
+
+            case OP_PRT_ALL_STACK:
+                break;
+
+            case OP_PRT_ALL_LOCAL:
                 break;
 
             case OP_HALT:
@@ -622,6 +672,12 @@ int main(){
         free(lines[i].tokens);
     }
     free(lines);
+
+    for (int i = 0; i < label_count; i++) {
+        free(labels[i].name);
+    }
+    free(labels);
+
     fclose(fptr);
 
     return 0;
