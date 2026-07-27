@@ -55,7 +55,13 @@ CompareFlag flags;
 typedef enum {
     VAL_INT,
     VAL_STR,
-    VAL_FLOAT
+    VAL_FLOAT,
+    VAL_BOOL,
+    VAL_CHAR,
+    VAL_ARRAY,
+    VAL_STRUCT,
+    VAL_ENUM,
+    VAL_UNION
 } ValType;
 
 typedef struct {
@@ -64,6 +70,7 @@ typedef struct {
         int as_int;
         char *as_str;
         double as_float;
+        bool as_bool;
     } value;
 } Object;
 
@@ -712,6 +719,18 @@ int main(){
             }
 
             case OP_PRT_ALL_LOCAL:
+                break;
+
+            case OP_STRUCT:
+                break;
+
+            case OP_FUNC:
+                break;
+
+            case OP_ENUM:
+                break;
+
+            case OP_UNION:
                 break;
 
             case OP_HALT:
